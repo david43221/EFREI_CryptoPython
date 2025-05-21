@@ -8,19 +8,20 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    return "Bienvenue sur l'API de cryptage/décryptage personnalisée !"
+    return render_template('hello.html')  # Page d'accueil, si tu veux l'utiliser avec HTML
 
-# 🔐 Route de chiffrement
+# 🔐 Chiffrement avec clé utilisateur
 @app.route('/encrypt/<string:key>/<string:valeur>')
 def encryptage(key, valeur):
     try:
-        f = Fernet(key.encode())
+        f = Fernet(key.encode())  # Clé passée par l'utilisateur
         valeur_bytes = valeur.encode()
         token = f.encrypt(valeur_bytes)
         return f"Valeur encryptée : {token.decode()}"
     except Exception as e:
-        return f"Erreur : clé invalide ou format incorrect. Détail : {str(e)}"
+        return f"Erreur de chiffrement : {str(e)}"
 
+# 🔓 Déchiffrement avec clé utilisateur
 @app.route('/decrypt/<string:key>/<string:token>')
 def decryptage(key, token):
     try:
@@ -31,7 +32,7 @@ def decryptage(key, token):
     except InvalidToken:
         return "Erreur : le token ne peut pas être déchiffré avec cette clé."
     except Exception as e:
-        return f"Erreur : clé invalide ou format incorrect. Détail : {str(e)}"
+        return f"Erreur de décryptage : {str(e)}"
 
 if __name__ == "__main__":
     app.run(debug=True)
